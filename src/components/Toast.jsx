@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import {COMPANY_ACTION_TYPES} from "../store/reducers/companiesReducer.js";
-
+import { COMPANY_ACTION_TYPES } from "../store/reducers/companiesReducer.js";
 
 const Toast = () => {
     const dispatch = useDispatch();
-    const toast = useSelector(state => state.companies.toast);
+    const toast = useSelector((state) => state.companies.toast);
     const [visible, setVisible] = useState(false);
 
     useEffect(() => {
@@ -27,11 +26,17 @@ const Toast = () => {
     const message = typeof toast === "string" ? toast : toast.message;
     const type = toast?.type || "info";
 
-    const bgColor = type === "error" ? "bg-red-600" : type === "success" ? "bg-green-600" : "bg-black";
+    const bgColor =
+        type === "error" ? "bg-red-600" : type === "success" ? "bg-green-600" : "bg-black";
 
     return (
-        <div className={`fixed bottom-16 left-1/2 transform -translate-x-1/2 px-6 py-3 rounded-full text-white z-50 transition-all duration-300 ${bgColor}`}
-             style={{ opacity: visible ? 1 : 0, transform: `translateX(-50%) translateY(${visible ? "0" : "20px"})` }}>
+        <div
+            className={`fixed bottom-4 sm:bottom-8 md:bottom-12 lg:bottom-16 left-1/2 transform -translate-x-1/2 px-4 sm:px-6 md:px-8 py-2 sm:py-3 md:py-4 rounded-full text-white z-50 transition-all duration-300 ${bgColor} max-w-[90vw] sm:max-w-md text-center whitespace-nowrap overflow-hidden text-ellipsis`}
+            style={{
+                opacity: visible ? 1 : 0,
+                transform: `translateX(-50%) translateY(${visible ? "0" : "20px"})`,
+            }}
+        >
             {message}
         </div>
     );
