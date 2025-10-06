@@ -2,7 +2,7 @@ import React from "react";
 import CustomTextField from "../../../components/CustomTextField.jsx";
 import CustomDropdown from "../../../components/CustomDropdown.jsx";
 
-const Filters = ({ filters, onFilterChange }) => {
+const Filters = ({ filters, onFilterChange, onSearch }) => {
     const locations = [
         { value: "", label: "All Locations" },
         { value: "New York", label: "New York" },
@@ -43,7 +43,7 @@ const Filters = ({ filters, onFilterChange }) => {
     ];
 
     return (
-        <div className="bg-white p-4 rounded-lg shadow-md mb-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div className="bg-white p-4 rounded-lg shadow-md mb-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 items-end">
             {/* Name Search */}
             <CustomTextField
                 label="Search by Name"
@@ -90,6 +90,14 @@ const Filters = ({ filters, onFilterChange }) => {
                 onChange={(val) => onFilterChange("rating", val)}
                 placeholder="Minimum Rating"
             />
+
+            {/* Search Button */}
+            <button
+                className="col-span-full sm:col-span-1 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                onClick={onSearch}
+            >
+                Search
+            </button>
         </div>
     );
 };

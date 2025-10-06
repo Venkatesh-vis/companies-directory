@@ -9,7 +9,8 @@ import Filters from './Filters.jsx';
 
 const CompanyContainer = () => {
     const dispatch = useDispatch();
-    const {companies, loading, error, pageCount } = useSelector(state => state.companies);
+    const { companies, loading, error, pageCount } = useSelector(state => state.companies);
+
     const [currentPage, setCurrentPage] = useState(0);
     const [filters, setFilters] = useState({
         name: "",
@@ -20,10 +21,9 @@ const CompanyContainer = () => {
         rating: ""
     });
 
-    const [debouncedFilters, setDebouncedFilters] = useState(filters);
+    const [appliedFilters, setAppliedFilters] = useState(filters);
     const [allCompanies, setAllCompanies] = useState([]);
     const PAGE_SIZE = 12;
-
 
     const handleSuccess = (data) => {
         const companies = Array.isArray(data) ? data : (data?.companies || []);
@@ -41,15 +41,6 @@ const CompanyContainer = () => {
     };
 
     useEffect(() => {
-        const handler = setTimeout(() => {
-            setDebouncedFilters(filters);
-            setCurrentPage(0);
-        }, 500);
-        return () => clearTimeout(handler);
-    }, [filters]);
-
-
-    useEffect(() => {
         dispatch({ type: COMPANY_ACTION_TYPES.SET_LOADING, payload: true });
         getCompanies(handleSuccess, handleFailure);
     }, []);
@@ -57,40 +48,40 @@ const CompanyContainer = () => {
     useEffect(() => {
         let filtered = [...allCompanies];
 
-        if (debouncedFilters.name) {
+        if (appliedFilters.name) {
             filtered = filtered.filter(company =>
-                company.name.toLowerCase().includes(debouncedFilters.name.toLowerCase())
+                company.name.toLowerCase().includes(appliedFilters.name.toLowerCase())
             );
         }
 
-        if (debouncedFilters.location) {
+        if (appliedFilters.location) {
             filtered = filtered.filter(company =>
-                company.location.toLowerCase().includes(debouncedFilters.location.toLowerCase())
+                company.location.toLowerCase().includes(appliedFilters.location.toLowerCase())
             );
         }
 
-        if (debouncedFilters.industry) {
+        if (appliedFilters.industry) {
             filtered = filtered.filter(company =>
-                company.industry.toLowerCase().includes(debouncedFilters.industry.toLowerCase())
+                company.industry.toLowerCase().includes(appliedFilters.industry.toLowerCase())
             );
         }
 
-        if (debouncedFilters.employees) {
+        if (appliedFilters.employees) {
             filtered = filtered.filter(company => {
                 const emp = company.employees || 0;
-                if (debouncedFilters.employees.includes("+")) {
-                    const min = parseInt(debouncedFilters.employees.replace("+", ""), 10);
+                if (appliedFilters.employees.includes("+")) {
+                    const min = parseInt(appliedFilters.employees.replace("+", ""), 10);
                     return emp >= min;
                 }
-                const [min, max] = debouncedFilters.employees.split("-").map(Number);
+                const [min, max] = appliedFilters.employees.split("-").map(Number);
                 return emp >= min && emp <= max;
             });
         }
 
-        if (debouncedFilters.founded) {
+        if (appliedFilters.founded) {
             filtered = filtered.filter(company => {
                 const year = company.founded || 0;
-                switch (debouncedFilters.founded) {
+                switch (appliedFilters.founded) {
                     case "Before 2000":
                         return year < 2000;
                     case "2000-2010":
@@ -105,14 +96,14 @@ const CompanyContainer = () => {
             });
         }
 
-        if (debouncedFilters.rating) {
-            const minRating = parseFloat(debouncedFilters.rating);
+        if (appliedFilters.rating) {
+            const minRating = parseFloat(appliedFilters.rating);
             filtered = filtered.filter(company =>
                 company.rating >= minRating
             );
         }
 
-        const filtersApplied = Object.values(debouncedFilters).some(val => val !== "");
+        const filtersApplied = Object.values(appliedFilters).some(val => val !== "");
         if (filtersApplied && filtered.length === 0) {
             dispatch({
                 type: COMPANY_ACTION_TYPES.SET_TOAST,
@@ -128,12 +119,14 @@ const CompanyContainer = () => {
         const paginatedData = filtered.slice(startIndex, endIndex);
 
         dispatch({ type: COMPANY_ACTION_TYPES.SET_COMPANIES, payload: paginatedData });
-    }, [allCompanies, debouncedFilters, currentPage]);
+    }, [allCompanies, appliedFilters, currentPage]);
 
     const onPageChange = (clickedData) => setCurrentPage(clickedData.selected);
+    const handleFilterChange = (field, value) => setFilters(prev => ({ ...prev, [field]: value }));
 
-    const handleFilterChange = (field, value) => {
-        setFilters(prev => ({ ...prev, [field]: value }));
+    const handleSearch = () => {
+        setAppliedFilters(filters);
+        setCurrentPage(0);
     };
 
     if (error) {
@@ -144,13 +137,12 @@ const CompanyContainer = () => {
         );
     }
 
-
     return (
         <div className="p-6 min-h-screen flex flex-col">
             <h1 className="text-center mb-2 text-xl sm:text-2xl md:text-3xl lg:text-4xl text-blue-500 font-semibold">
                 Companies Directory
             </h1>
-            <Filters filters={filters} onFilterChange={handleFilterChange} />
+            <Filters filters={filters} onFilterChange={handleFilterChange} onSearch={handleSearch} />
             <div className="flex-1">
                 <div className="min-h-[16rem] grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                     {loading ? (
@@ -158,9 +150,7 @@ const CompanyContainer = () => {
                             <LoaderSpinner />
                         </div>
                     ) : companies.length > 0 ? (
-                        companies.map(company => (
-                            <CompanyCard key={company.id} company={company} />
-                        ))
+                        companies.map(company => <CompanyCard key={company.id} company={company} />)
                     ) : (
                         <div className="col-span-full flex justify-center items-center text-gray-500 text-lg">
                             No matching results found
@@ -168,13 +158,10 @@ const CompanyContainer = () => {
                     )}
                 </div>
             </div>
+
             {!loading && companies.length > 0 && pageCount > 1 && (
                 <div className="mt-6">
-                    <Paginator
-                        totalPageCount={pageCount}
-                        initialPage={currentPage}
-                        onPageChange={onPageChange}
-                    />
+                    <Paginator totalPageCount={pageCount} initialPage={currentPage} onPageChange={onPageChange} />
                 </div>
             )}
         </div>

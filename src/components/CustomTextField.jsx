@@ -37,9 +37,10 @@ const CustomTextField = ({
         }
     };
 
-    const inputClass = `peer w-full py-3 px-3 border border-gray-400 rounded-md text-sm sm:text-base focus:outline-none ${
-        readOnly ? 'text-gray-400' : ''
+    const inputClass = `peer w-full h-10 px-3 border border-gray-400 rounded-md text-sm sm:text-base focus:outline-none ${
+        readOnly ? 'text-gray-400 bg-gray-100' : 'bg-white'
     }`;
+
 
     return (
         <div className="relative w-full">
@@ -72,13 +73,14 @@ const CustomTextField = ({
             <label
                 htmlFor={id}
                 className={`absolute left-3 transition-all duration-200 pointer-events-none bg-white px-1 transform
-                    ${isFloating
+        ${isFloating
                     ? '-top-2 text-xs text-gray-600'
-                    : 'top-3 text-sm text-gray-500'
+                    : 'top-2.5 text-sm text-gray-500'
                 }`}
             >
                 {label}
             </label>
+
 
             <div className="flex justify-between mt-1 text-xs sm:text-sm">
                 {errorText ? <p className="text-red-500">{errorText}</p> : <span />}
