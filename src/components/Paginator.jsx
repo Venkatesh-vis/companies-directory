@@ -28,11 +28,11 @@ const Paginator = ({ totalPageCount, initialPage, onPageChange }) => {
                 nextClassName={`flex items-center px-[0.5vw] rounded-md ${
                     totalPageCount > currentPageIndex + 1
                         ? "text-blue-600 hover:bg-blue-600 hover:text-white cursor-pointer"
-                        : "opacity-50 cursor-not-allowed text-gray-400"
+                        : "opacity-50 text-gray-400"
                 }`}
                 previousClassName={`flex items-center px-[0.5vw] rounded-md ${
                     currentPageIndex === 0
-                        ? "opacity-50 cursor-not-allowed text-gray-400"
+                        ? "opacity-50 text-gray-400"
                         : "text-blue-600 hover:bg-blue-600 hover:text-white cursor-pointer"
                 }`}
                 breakClassName="flex items-center text-blue-600"

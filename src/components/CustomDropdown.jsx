@@ -68,7 +68,7 @@ const CustomDropdown = ({
             </div>
 
             {open && !disabled && (
-                <div className="absolute top-full left-0 w-full bg-white border border-gray-300 rounded-md mt-1 shadow-lg max-h-40 overflow-auto z-50">
+                <div style={{scrollbarWidth: 'none'}} className="absolute top-full left-0 w-full bg-white border border-gray-300 rounded-md mt-1 shadow-lg max-h-40 overflow-auto z-50">
                     {displayedOptions.map((option, index) => (
                         <div
                             key={option.value}
