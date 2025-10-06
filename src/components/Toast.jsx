@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import {COMPANY_ACTION_TYPES} from "../store/companiesReducer.js";
+import {COMPANY_ACTION_TYPES} from "../store/reducers/companiesReducer.js";
 
 
 const Toast = () => {

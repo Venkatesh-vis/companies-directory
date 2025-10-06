@@ -1,5 +1,5 @@
 import { combineReducers, legacy_createStore } from "redux";
-import companiesReducer from "./companiesReducer.js";
+import companiesReducer from "./reducers/companiesReducer.js";
 
 const rootReducer = combineReducers({
     companies: companiesReducer,

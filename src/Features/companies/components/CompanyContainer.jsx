@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import CompanyCard from './CompanyCard.jsx';
-import { COMPANY_ACTION_TYPES } from '../../../store/companiesReducer.js';
+import { COMPANY_ACTION_TYPES } from '../../../store/reducers/companiesReducer.js';
 import { getCompanies } from '../../../API/Companies/company_api.js';
 import Paginator from '../../../components/Paginator.jsx';
 import LoaderSpinner from '../../../components/LoaderSpinner.jsx';
@@ -34,6 +34,10 @@ const CompanyContainer = () => {
     const handleFailure = () => {
         dispatch({ type: COMPANY_ACTION_TYPES.SET_ERROR, payload: 'Failed to load companies' });
         dispatch({ type: COMPANY_ACTION_TYPES.SET_LOADING, payload: false });
+        dispatch({
+            type: COMPANY_ACTION_TYPES.SET_TOAST,
+            payload: { type: "error", message: "Something went wrong" }
+        });
     };
 
     useEffect(() => {
@@ -108,6 +112,14 @@ const CompanyContainer = () => {
             );
         }
 
+        const filtersApplied = Object.values(debouncedFilters).some(val => val !== "");
+        if (filtersApplied && filtered.length === 0) {
+            dispatch({
+                type: COMPANY_ACTION_TYPES.SET_TOAST,
+                payload: { type: "info", message: "No matching results found" }
+            });
+        }
+
         const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
         dispatch({ type: COMPANY_ACTION_TYPES.SET_PAGE_COUNT, payload: totalPages });
 
@@ -124,11 +136,14 @@ const CompanyContainer = () => {
         setFilters(prev => ({ ...prev, [field]: value }));
     };
 
-    if (error) return (
-        <div className="flex items-center justify-center h-screen">
-            <p className="text-red-600 text-lg">{error}</p>
-        </div>
-    );
+    if (error) {
+        return (
+            <div className="flex items-center justify-center h-screen">
+                <p className="text-red-600 text-lg">{error}</p>
+            </div>
+        );
+    }
+
 
     return (
         <div className="p-6 min-h-screen flex flex-col">
